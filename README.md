@@ -20,6 +20,11 @@ Archivos de ejemplos recomendados:
 - `joins-ejemplos.sql`
 - `chinook-ejemplos.sql`
 
+**Calculos en la base vs en Node (cuando conviene)**
+- **Mejor en la base de datos**: agregaciones grandes (`SUM`, `AVG`), filtrados complejos, joins, rankings y agrupaciones. La DB esta optimizada para esto, reduce trafico de datos y aprovecha indices.
+- **Mejor en Node**: logica de negocio especifica, transformaciones pequeñas sobre pocos registros ya filtrados, o reglas que no encajan bien en SQL.
+- **Regla practica**: si la operacion reduce el volumen de datos (filtra, agrega, ordena), hazla en SQL; si solo da formato o aplica una regla local, hazla en Node.
+
 **Objetivo de cada archivo de ejemplos**
 - `joins-ejemplos.sql`: ejemplos de tipos de JOIN y casos habituales.
 - `chinook-ejemplos.sql`: joins, subqueries y window functions en contexto Chinook.

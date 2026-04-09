@@ -1,0 +1,28 @@
+{
+  "name": "chinook-node-examples",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "all": "tsx funciones-cadena.ts && tsx funciones-nativas.ts && tsx funciones-agregacion.ts && tsx funciones-numericas.ts && tsx funciones-fecha-hora.ts && tsx otras-funciones.ts && tsx funciones-control-flujo.ts && tsx funciones-conversion.ts && tsx funciones-sistema.ts && tsx funciones-cifrado.ts",
+    "funciones-cadena": "tsx funciones-cadena.ts",
+    "funciones-nativas": "tsx funciones-nativas.ts",
+    "funciones-agregacion": "tsx funciones-agregacion.ts",
+    "funciones-numericas": "tsx funciones-numericas.ts",
+    "funciones-fecha-hora": "tsx funciones-fecha-hora.ts",
+    "otras-funciones": "tsx otras-funciones.ts",
+    "funciones-control-flujo": "tsx funciones-control-flujo.ts",
+    "funciones-conversion": "tsx funciones-conversion.ts",
+    "funciones-sistema": "tsx funciones-sistema.ts",
+    "funciones-cifrado": "tsx funciones-cifrado.ts"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
