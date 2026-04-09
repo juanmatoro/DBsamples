@@ -14,7 +14,8 @@ LIMIT 10;
 
 /* 2) LEFT JOIN
    Devuelve todo de la tabla izquierda aunque no haya match a la derecha.
-   Uso habitual: listar maestros con posibles detalles. */
+   Uso habitual: listar maestros con posibles detalles. 
+   Se puede usar para ver todos los artistas aunque no tengan álbumes asignados. */
 SELECT a.name AS artist, al.title AS album
 FROM artist a
 LEFT JOIN album al ON al.artist_id = a.artist_id
@@ -23,7 +24,8 @@ LIMIT 20;
 
 /* 3) RIGHT JOIN
    Devuelve todo de la tabla derecha aunque no haya match a la izquierda.
-   Uso habitual: menos comun, equivalente a invertir un LEFT JOIN. */
+   Uso habitual: menos común, equivalente a invertir un LEFT JOIN. 
+   Se puede usar para ver todos los álbumes aunque no tengan artista asignado. */
 SELECT al.title AS album, a.name AS artist
 FROM artist a
 RIGHT JOIN album al ON al.artist_id = a.artist_id
