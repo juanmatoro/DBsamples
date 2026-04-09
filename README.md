@@ -7,6 +7,8 @@ Este proyecto contiene ejemplos practicos de uso de bases de datos en **PostgreS
 - `samples.sql`: consultas variadas por nivel (basico, joins, agregados, window).
 - `joins-ejemplos.sql`: ejemplos y explicacion de los tipos de `JOIN`.
 - `chinook-ejemplos.sql`: ejemplos con `JOINs`, `subqueries` y `window functions`.
+- `ddl-ejemplos.sql`: ejemplos de definicion de datos (DDL).
+- `dcl-ejemplos.sql`: ejemplos de control de acceso (DCL).
 - `album_data_utf8.sql`: datos extra en UTF-8.
 
 **Como usar**
@@ -20,6 +22,8 @@ Archivos de ejemplos recomendados:
 **Objetivo de cada archivo de ejemplos**
 - `joins-ejemplos.sql`: ejemplos de tipos de JOIN y casos habituales.
 - `chinook-ejemplos.sql`: joins, subqueries y window functions en contexto Chinook.
+- `ddl-ejemplos.sql`: crear, alterar y borrar objetos (schema, tablas, vistas, indices).
+- `dcl-ejemplos.sql`: grants, revokes, privilegios por defecto, secuencias y funciones.
 - `dml-select-ejemplos.sql`: lecturas basicas con filtros y patrones.
 - `unions-ejemplos.sql`: combinacion de resultados entre tablas.
 - `comparacion-ejemplos.sql`: operadores y expresiones de comparacion.
