@@ -20,7 +20,7 @@ LIMIT 5;
 
 /*  Explicación: une track con genre, agrupa por género y cuenta los tracks en cada grupo. */
 
-  4. Top 5 países con más clientes.
+/*  4. Top 5 países con más clientes. */
 
   SELECT country, COUNT(*) AS total_customers
   FROM customer
@@ -133,7 +133,7 @@ LIMIT 5;
   /*  12. Clientes con gasto superior al promedio global. */
    WITH customer_spend AS (
     SELECT c.customer_id,
-           c.first_name || ' ' || c.last_name AS customer,
+           c.first_name || ' ' || c.last_name AS customer, /*  Concatenamos nombre y apellido para mostrar el nombre completo. */
            SUM(i.total) AS total_spent
     FROM customer c
     JOIN invoice i ON i.customer_id = c.customer_id
@@ -149,6 +149,71 @@ LIMIT 5;
   WHERE cs.total_spent > a.avg_total
   ORDER BY cs.total_spent DESC;
 
-  /*  Explicación: primero calcula gasto por cliente, luego la media, y filtra los que están por encima. */
+  /*  Explicación: primero calcula gasto por cliente, luego la media, y filtra los que están por encima. 
+  */
 
   ———
+
+  
+--   INNER JOIN
+--   Solo filas que tienen coincidencia en ambas tablas.
+
+  SELECT t.name AS track, g.name AS genre
+  FROM track t
+  JOIN genre g ON g.genre_id = t.genre_id
+  LIMIT 10;
+
+--   LEFT JOIN
+--   Devuelve todo de la tabla izquierda aunque no haya match a la derecha.
+
+  SELECT a.name AS artist, al.title AS album
+  FROM artist a
+  LEFT JOIN album al ON al.artist_id = a.artist_id
+  ORDER BY a.name
+  LIMIT 20;
+
+--   RIGHT JOIN
+--   Devuelve todo de la tabla derecha aunque no haya match a la izquierda.
+
+  SELECT al.title AS album, a.name AS artist
+  FROM artist a
+  RIGHT JOIN album al ON al.artist_id = a.artist_id
+  ORDER BY al.title
+  LIMIT 20;
+
+--   FULL OUTER JOIN
+--   Incluye filas sin match en cualquiera de las dos tablas.
+
+  SELECT a.name AS artist, al.title AS album
+  FROM artist a
+  FULL OUTER JOIN album al ON al.artist_id = a.artist_id
+  ORDER BY a.name NULLS LAST
+  LIMIT 20;
+
+--   CROSS JOIN
+--   Producto cartesiano (todas las combinaciones).
+
+  SELECT g.name AS genre, m.name AS media_type
+  FROM genre g
+  CROSS JOIN media_type m
+  LIMIT 20;
+
+--   SELF JOIN
+--   Una tabla se une consigo misma (útil para jerarquías).
+
+  SELECT e.first_name || ' ' || e.last_name AS employee,
+         m.first_name || ' ' || m.last_name AS manager
+  FROM employee e
+  LEFT JOIN employee m ON m.employee_id = e.reports_to
+  ORDER BY employee
+  LIMIT 20;
+
+  /*  JOIN con tabla puente (N:N)
+  Relación muchos-a-muchos. */
+
+  SELECT p.name AS playlist, t.name AS track
+  FROM playlist p
+  JOIN playlist_track pt ON pt.playlist_id = p.playlist_id
+  JOIN track t ON t.track_id = pt.track_id
+  ORDER BY p.name, t.name
+  LIMIT 20;
