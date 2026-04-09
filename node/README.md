@@ -40,10 +40,22 @@ Ejemplos disponibles:
 - `funciones-sistema`
 - `funciones-cifrado`
 
+En `funciones-agregacion` se incluyen ejemplos de:
+- `GROUP BY` basico
+- `HAVING`
+- agregacion mensual con `DATE_TRUNC`
+- ranking de clientes con `JOIN`
+
 **Calculos en la base vs en Node (cuando conviene)**
 - **Mejor en la base de datos**: agregaciones grandes, filtros complejos, joins y rankings. Reduce trafico de datos y aprovecha indices.
 - **Mejor en Node**: logica de negocio, formato final y transformaciones pequeñas sobre pocos registros.
 - **Regla practica**: si la operacion reduce datos, hazla en SQL; si solo presenta datos, hazla en Node.
+
+**Por que las agregaciones se lanzan desde Node pero las hace la DB**
+- En backend normalmente necesitas KPIs (totales, promedios, rankings) para APIs y dashboards.
+- Esas operaciones se ejecutan en la base porque esta optimizada con indices y motores de agregacion.
+- Si las hicieras en Node, tendrias que traer miles de filas primero (mas lento y mas caro).
+- Desde Node solo envias la consulta y recibes un resultado ya resumido.
 
 **Nota**
 El ejemplo de `funciones-cifrado` usa `pgcrypto` para `sha256`.
