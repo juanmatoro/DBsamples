@@ -10,6 +10,7 @@ Este proyecto contiene ejemplos practicos de uso de bases de datos en **PostgreS
 - `ddl-ejemplos.sql`: ejemplos de definicion de datos (DDL).
 - `dcl-ejemplos.sql`: ejemplos de control de acceso (DCL).
 - `relaciones-ejemplos.sql`: ejemplos detallados de relaciones 1:1, 1:N y N:N.
+- `readme.pg.md`: guia JS/TS orientada a PostgreSQL.
 - `album_data_utf8.sql`: datos extra en UTF-8.
 
 **Como usar**
