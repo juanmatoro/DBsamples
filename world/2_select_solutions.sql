@@ -129,22 +129,73 @@ ORDER  BY name;
 -- =========================== EJERCICIO 4 =============================
 -- Original pide "lenguajes oficiales", pero no hay tabla de idiomas.
 -- Se devuelven las ciudades europeas > 1.500.000 con su país.
+--
+-- ---------------------------------------------------------------------
+-- ORDEN DE LAS CLAUSULAS DE UN SELECT
+-- ---------------------------------------------------------------------
+-- Hay dos ordenes distintos: el orden en que se ESCRIBE la consulta
+-- (sintaxis obligatoria) y el orden en que el motor la EJECUTA (orden
+-- lógico). No coinciden, y eso explica varias reglas practicas.
+--
+-- 1) Orden de ESCRITURA (obligatorio para el parser):
+--      SELECT  -> FROM -> JOIN ... ON -> WHERE -> GROUP BY
+--              -> HAVING -> ORDER BY -> LIMIT / OFFSET
+--    Si cambias el orden, la consulta no compila.
+--
+-- 2) Orden de EJECUCIÓN (lo que el motor hace internamente):
+--      1. FROM            carga las tablas base
+--      2. JOIN ... ON     combina filas según la condición de union
+--      3. WHERE           filtra filas individuales
+--      4. GROUP BY        agrupa filas
+--      5. HAVING          filtra grupos
+--      6. SELECT          calcula columnas y aplica alias
+--      7. DISTINCT        elimina duplicados
+--      8. ORDER BY        ordena el resultado
+--      9. LIMIT / OFFSET  recorta el numero de filas
+--    Mnemotecnia: F-W-G-H-S-O-L
+--
+-- Aplicado a la consulta de abajo, el motor hace:
+--   1. FROM cities ci                -> carga la tabla cities como ci
+--   2. JOIN countries co ON ...      -> empareja cada ciudad con su país
+--   3. WHERE co.region = 'Europe'
+--          AND ci.population > 1500000
+--                                    -> descarta ciudades no europeas o
+--                                       con menos de 1.500.000 hab.
+--   4. SELECT ci.name, co.name,
+--             TO_CHAR(ci.population,...)
+--                                    -> calcula las 3 columnas finales
+--                                       y aplica los alias
+--   5. ORDER BY ci.population DESC   -> ordena de mayor a menor
+--
+-- Consecuencias practicas de este orden:
+--   * No puedes usar un alias del SELECT en el WHERE: WHERE se ejecuta
+--     ANTES que SELECT. Por eso en el ejercicio 2 hay que repetir
+--     "population / NULLIF(area_sq_km, 0) > 500" en lugar de "densidad > 500".
+--   * Si puedes usar el alias en ORDER BY (se ejecuta DESPUES de SELECT),
+--     pero aqui ordenamos por ci.population (numerico) y NO por el alias
+--     poblacion_ciudad, porque ese alias ya es texto formateado y se
+--     ordenaria alfabeticamente ("1.000.000" iria antes que "999.999").
+--   * HAVING filtra GRUPOS y solo tiene sentido con GROUP BY o agregados;
+--     WHERE filtra FILAS.
+--   * LIMIT se aplica al final, asi que ORDER BY ... LIMIT 10 sirve para
+--     "los 10 mayores"; un LIMIT sin ORDER BY devuelve filas arbitrarias.
+-- ---------------------------------------------------------------------
 
 SELECT
-    ci.name AS ciudad,
+    ci.name AS ciudad,                                            -- 6. SELECT  (calcula columnas y alias)
     co.name AS pais,
-    TO_CHAR(ci.population, '999G999G999G999') AS poblacion_ciudad
-FROM   cities    ci
-JOIN   countries co ON co.id = ci.country_id
-WHERE  co.region = 'Europe'
+    TO_CHAR(ci.population, '999G999G999G999') AS población_ciudad
+FROM   cities    ci                                               -- 1. FROM    (tabla base)
+JOIN   countries co ON co.id = ci.country_id                      -- 2. JOIN    (empareja ciudades con países)
+WHERE  co.region = 'Europe'                                       -- 3. WHERE   (filtra filas)
   AND  ci.population > 1500000
-ORDER  BY ci.population DESC;
+ORDER  BY ci.population DESC;                                     -- 8. ORDER BY (ordena por valor numérico)
 
 
 -- =========================== EJERCICIO 5 =============================
 
 -- Cuántos países hay
-SELECT TO_CHAR(COUNT(*), '999G999') AS total_paises FROM countries;
+SELECT TO_CHAR(COUNT(*), '999G999') AS total_países FROM countries;
 
 -- Superficie total del mundo
 SELECT TO_CHAR(SUM(area_sq_km), '999G999G999G999') AS superficie_total
@@ -156,7 +207,7 @@ FROM   countries;
 
 -- País más grande
 SELECT
-    name AS pais,
+    name AS país,
     TO_CHAR(area_sq_km, '999G999G999') AS extension
 FROM   countries
 ORDER  BY area_sq_km DESC NULLS LAST
