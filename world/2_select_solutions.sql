@@ -208,25 +208,76 @@ FROM   countries;
 -- País más grande
 SELECT
     name AS país,
-    TO_CHAR(area_sq_km, '999G999G999') AS extension
+    TO_CHAR(area_sq_km, '999G999G999') AS "extensión en km²"
 FROM   countries
 ORDER  BY area_sq_km DESC NULLS LAST
 LIMIT  1;
 
 -- País más pequeño
 SELECT
-    name AS pais,
-    TO_CHAR(area_sq_km, '999G999G999') AS extension
+    name AS país,
+    TO_CHAR(area_sq_km, '999G999G999') AS "extensión en km²"
 FROM   countries
 WHERE  area_sq_km IS NOT NULL AND area_sq_km > 0
 ORDER  BY area_sq_km ASC
 LIMIT  1;
 
--- Superficie y población de cada continente (region)
+-- ---------------------------------------------------------------------
+-- Superficie, población y densidad de cada continente (región)
+-- ---------------------------------------------------------------------
+-- En la tabla 'countries' hay datos incompletos que afectan al resultado:
+--   * Algunos países tienen 'region' a NULL o cadena vacía -> al hacer
+--     GROUP BY region aparece una fila "fantasma" con continente vacío.
+--   * El continente 'Polar' (Antártida) tiene superficie pero población
+--     a NULL -> SUM(population) devuelve NULL y la densidad también.
+-- A continuación se ofrecen tres versiones de la consulta según cómo
+-- queramos tratar esos datos.
+-- ---------------------------------------------------------------------
+
+-- OPCIÓN 1 — Versión "cruda": muestra todo tal cual está en la BD.
+-- Incluye la fila con continente vacío y la fila Polar sin habitantes.
 SELECT
     region AS continente,
     TO_CHAR(SUM(area_sq_km), '999G999G999G999') AS superficie_total,
-    TO_CHAR(SUM(population), '999G999G999G999') AS poblacion_total
+    TO_CHAR(SUM(population), '999G999G999G999') AS población_total,
+    TO_CHAR(SUM(population) / NULLIF(SUM(area_sq_km), 0),
+            '999G999G990D99')                   AS densidad
 FROM   countries
 GROUP  BY region
-ORDER  BY SUM(area_sq_km) DESC;
+ORDER  BY SUM(population) / NULLIF(SUM(area_sq_km), 0) DESC NULLS LAST;
+
+
+-- OPCIÓN 2 — Versión "limpia": filtra los grupos problemáticos.
+--   * WHERE  descarta los países sin región asignada.
+--   * HAVING descarta los continentes sin población (Polar).
+-- Es la más adecuada cuando el objetivo es comparar continentes reales.
+SELECT
+    region AS continente,
+    TO_CHAR(SUM(area_sq_km), '999G999G999G999') AS superficie_total,
+    TO_CHAR(SUM(population), '999G999G999G999') AS población_total,
+    TO_CHAR(SUM(population) / NULLIF(SUM(area_sq_km), 0),
+            '999G999G990D99')                   AS densidad
+FROM   countries
+WHERE  region IS NOT NULL AND region <> ''
+GROUP  BY region
+HAVING SUM(population) IS NOT NULL
+ORDER  BY SUM(population) / NULLIF(SUM(area_sq_km), 0) DESC;
+
+
+-- OPCIÓN 3 — Versión "tolerante": muestra todos los grupos pero
+-- sustituye los NULL por valores legibles.
+--   * COALESCE(NULLIF(region,''), '(sin región)') etiqueta el grupo huérfano.
+--   * COALESCE(SUM(...), 0) convierte sumas NULL en 0.
+--   * NULLS LAST deja al final los continentes cuya densidad sigue siendo NULL
+--     (los que tienen 0 habitantes, donde la densidad no tiene sentido).
+SELECT
+    COALESCE(NULLIF(region, ''), '(sin región)')                AS continente,
+    TO_CHAR(COALESCE(SUM(area_sq_km), 0), '999G999G999G999')    AS superficie_total,
+    TO_CHAR(COALESCE(SUM(population), 0), '999G999G999G999')    AS población_total,
+    TO_CHAR(COALESCE(SUM(population), 0)
+            / NULLIF(SUM(area_sq_km), 0),
+            '999G999G990D99')                                   AS densidad
+FROM   countries
+GROUP  BY COALESCE(NULLIF(region, ''), '(sin región)')
+ORDER  BY COALESCE(SUM(population), 0)
+        / NULLIF(SUM(area_sq_km), 0) DESC NULLS LAST;
